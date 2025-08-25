@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ganesh Puja Receipt Saver</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #ffecd2, #fcb69f);
+      text-align: center;
+      padding: 40px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      margin: auto;
+      width: 350px;
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+    }
+    input, button {
+      margin: 10px 0;
+      padding: 8px;
+      width: 90%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #ff5722;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .receipt-list {
+      margin-top: 25px;
+      text-align: left;
+      background: #fff8dc;
+      padding: 15px;
+      border: 2px solid #ff9800;
+      border-radius: 10px;
+      width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .receipt-item {
+      border-bottom: 1px dashed #aaa;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+    }
+    .receipt-item:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Sharma Family Ganesh Puja</h2>
+
+    <label>Passcode (required to save):</label>
+    <input type="password" id="passcode" placeholder="Enter passcode"><br>
+
+    <label>Date:</label>
+    <input type="date" id="date"><br>
+
+    <label>Receipt No:</label>
+    <input type="text" id="no"><br>
+
+    <label>Name:</label>
+    <input type="text" id="name"><br>
+
+    <label>Amount (₹):</label>
+    <input type="number" id="amount"><br>
+
+    <button onclick="saveReceipt()">Save</button>
+  </div>
+
+  <div class="receipt-list" id="receiptList">
+    <h3>Saved Receipts</h3>
+    <div id="list"></div>
+  </div>
+
+  <script>
+    function saveReceipt() {
+      const pass = document.getElementById("passcode").value;
+      if (pass !== "jsg12345") {
+        alert("Incorrect passcode! You cannot save new receipts.");
+        return;
+      }
+
+      const date = document.getElementById("date").value;
+      const no = document.getElementById("no").value;
+      const name = document.getElementById("name").value;
+      const amount = document.getElementById("amount").value;
+
+      if (!date || !no || !name || !amount) {
+        alert("Please fill all fields!");
+        return;
+      }
+
+      // Get previous receipts or empty array
+      let receipts = JSON.parse(localStorage.getItem("ganeshReceipts")) || [];
+
+      // Add new one
+      receipts.push({ date, no, name, amount });
+
+      // Save back
+      localStorage.setItem("ganeshReceipts", JSON.stringify(receipts));
+
+      // Refresh list
+      showReceipts();
+
+      // clear input
+      document.getElementById("date").value = "";
+      document.getElementById("no").value = "";
+      document.getElementById("name").value = "";
+      document.getElementById("amount").value = "";
+      document.getElementById("passcode").value = "";
+    }
+
+    function showReceipts() {
+      let receipts = JSON.parse(localStorage.getItem("ganeshReceipts")) || [];
+      let listDiv = document.getElementById("list");
+      listDiv.innerHTML = "";
+
+      receipts.forEach((r, index) => {
+        listDiv.innerHTML += `
+          <div class="receipt-item">
+            <strong>Receipt ${index+1}</strong><br>
+            Date: ${r.date}<br>
+            No: ${r.no}<br>
+            Name: ${r.name}<br>
+            Amount: ₹${r.amount}
+          </div>
+        `;
+      });
+    }
+
+    // Show receipts on load
+    window.onload = showReceipts;
+  </script>
+
+</body>
+</html>
